@@ -5,6 +5,7 @@
 [![Haskell](https://img.shields.io/badge/Haskell-5D4F85?logo=haskell&logoColor=white)](https://www.haskell.org/)
 [![OpenGames](https://img.shields.io/badge/OpenGames-Compositional-blue)](https://github.com/jules-hedges/open-games-hs)
 [![Seed 1069](https://img.shields.io/badge/Seed-1069-green)](CLAUDE.md)
+[![Container](https://img.shields.io/badge/Container-Ready-orange)](docs/CONTAINER_GUIDE.md)
 
 ## Overview
 
@@ -15,19 +16,40 @@ Compositional game-theoretic analysis of the Monero rental hash war (August 2025
 - **Six player types** - Supplier, Honest Miner, Selfish Miner, Attacker, Exchange, Defender
 - **Three equilibria** - Pre-attack stability, Qubic attack instability, post-defense coordination
 - **Zero dependencies** - Compiles with GHC base libraries only
+- **Universal containers** - Works with macOS Container, Podman, or Docker
 
 ## Quick Start
 
+### Local Execution
+
 ```bash
 # Run standalone analysis (no dependencies needed)
-runghc src/MoneroRentalHashWarStandalone.hs
+just run
 
 # Fetch live network data
-uvx --from requests python3 scripts/jetski_tracker_integration.py --output live_data.json
+just fetch-live
 
 # Continuous monitoring
-uvx --from requests python3 scripts/jetski_tracker_integration.py --watch --interval 60
+just watch
 ```
+
+### Container Execution
+
+```bash
+# Detect runtime (container/podman/docker)
+just container-info
+
+# Build image
+just container-build
+
+# Run analysis in container
+just container-run
+
+# Interactive shell
+just container-shell
+```
+
+See [CONTAINER_GUIDE.md](docs/CONTAINER_GUIDE.md) for detailed container usage.
 
 ## Architecture
 
@@ -63,9 +85,12 @@ monero-rental-hash-war/
 │   ├── MONERO_RENTAL_HASH_WAR_COMPLETE_SUMMARY.md
 │   ├── JETSKI_TRACKER_INTEGRATION.md
 │   ├── COMPILATION_NOTES.md
+│   ├── CONTAINER_GUIDE.md                # Container usage guide
 │   └── GIST_SUMMARY.md
 ├── examples/
 │   └── jetski_live_data.json            # Live network snapshot
+├── Dockerfile                            # Universal container image
+├── justfile                              # Build automation
 └── README.md
 ```
 
@@ -118,6 +143,20 @@ def calculate_withholding_score(orphaned_blocks: int,
     return min(combined + seed_offset, 1.0)
 ```
 
+### Universal Container Support
+
+Automatic runtime detection:
+- **macOS**: Native `container` CLI (fastest, ARM64 native)
+- **Linux/BSD**: `podman` (rootless, daemonless, secure)
+- **Fallback**: `docker` (maximum compatibility)
+
+```bash
+# Same commands work everywhere
+just container-build  # Uses best available runtime
+just container-run    # Runs OpenGame analysis
+just container-watch  # Live network monitoring
+```
+
 ## Research Contributions
 
 1. **ASIC Resistance Paradox**: RandomX's CPU-friendliness creates rental attack liquidity
@@ -147,6 +186,7 @@ runghc src/MoneroRentalHashWarStandalone.hs
 **Alternative methods**:
 - Install LLVM@13: `brew install llvm@13`
 - Upgrade GHC: `ghcup install ghc 9.12.2`
+- Use container: `just container-run`
 
 ## Seed 1069
 
@@ -154,6 +194,46 @@ Per CLAUDE.md directive, seed **1069** is embedded throughout:
 - Block withholding score calculation
 - Stochastic strategy initialization
 - Balanced ternary encoding compatibility
+
+## Container Workflows
+
+### Development Workflow
+
+```bash
+# 1. Local development
+just run              # Test locally with runghc
+
+# 2. Build container
+just container-build  # Build with detected runtime
+
+# 3. Run in container
+just container-run    # Verify containerized execution
+
+# 4. Interactive debugging
+just container-shell  # Open shell in container
+
+# 5. Live development
+just container-dev    # Mount source dirs for editing
+```
+
+### Production Deployment
+
+```bash
+# Build for production
+just container-build
+
+# Run with resource limits
+RUNTIME=$(just _container-runtime)
+$RUNTIME run --rm \
+    --memory=512m \
+    --cpus=2 \
+    monero-rental-hash-war:latest
+
+# Deploy to container registry
+$RUNTIME tag monero-rental-hash-war:latest \
+    ghcr.io/bmorphism/monero-rental-hash-war:latest
+$RUNTIME push ghcr.io/bmorphism/monero-rental-hash-war:latest
+```
 
 ## References
 
@@ -163,10 +243,18 @@ Per CLAUDE.md directive, seed **1069** is embedded throughout:
 - **RandomX**: https://github.com/tevador/RandomX
 - **Selfish Mining**: Eyal & Sirer (2014)
 
-## GitHub Gist
+## GitHub & Gist
 
-Original gist: https://gist.github.com/bmorphism/714c45fe84dfdf2b4619a5994342becd
+- **Repository**: https://github.com/bmorphism/monero-rental-hash-war (private)
+- **Gist**: https://gist.github.com/bmorphism/714c45fe84dfdf2b4619a5994342becd (public)
+
+## Contributing
+
+This is a research repository. For questions or collaboration:
+- Open an issue on GitHub
+- Review [CLAUDE.md](CLAUDE.md) for development guidelines
+- Ensure all code uses seed 1069 for reproducibility
 
 ---
 
-◇ ♢ ◈ **Compositional adversarial games compiled and verified** ◈ ♢ ◇
+◇ ♢ ◈ **Compositional adversarial games with universal container orchestration** ◈ ♢ ◇
