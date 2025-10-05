@@ -1,0 +1,39 @@
+# Git
+.git/
+.gitignore
+
+# Build artifacts
+*.hi
+*.o
+*.prof
+*.hp
+bin/*
+dist/
+dist-newstyle/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+
+# Documentation (not needed in container)
+docs/api/
+*.md
+!README.md
+
+# Test artifacts
+test-results/
+*.log
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Temporary
+tmp/
+*.tmp

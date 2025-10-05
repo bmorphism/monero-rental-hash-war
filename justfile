@@ -91,3 +91,71 @@ init-git:
 push-github:
     gh repo create monero-rental-hash-war --private --source=. --remote=origin
     git push -u origin main
+
+# Detect container runtime (macOS Container or podman)
+_container-runtime:
+    #!/usr/bin/env bash
+    if command -v container >/dev/null 2>&1; then
+        echo "container"
+    elif command -v podman >/dev/null 2>&1; then
+        echo "podman"
+    elif command -v docker >/dev/null 2>&1; then
+        echo "docker"
+    else
+        echo "error: no container runtime found (install 'container' on macOS or 'podman' on other platforms)" >&2
+        exit 1
+    fi
+
+# Build container image
+container-build:
+    #!/usr/bin/env bash
+    RUNTIME=$(just _container-runtime)
+    echo "Building with $RUNTIME..."
+    $RUNTIME build -t monero-rental-hash-war:latest .
+
+# Run analysis in container
+container-run:
+    #!/usr/bin/env bash
+    RUNTIME=$(just _container-runtime)
+    echo "Running OpenGame analysis in $RUNTIME container..."
+    $RUNTIME run --rm monero-rental-hash-war:latest
+
+# Run with live data fetch in container
+container-watch:
+    #!/usr/bin/env bash
+    RUNTIME=$(just _container-runtime)
+    echo "Starting live monitoring in $RUNTIME container..."
+    $RUNTIME run --rm -it monero-rental-hash-war:latest \
+        bash -c "uvx --from requests python3 scripts/jetski_tracker_integration.py --watch --interval 60"
+
+# Interactive shell in container
+container-shell:
+    #!/usr/bin/env bash
+    RUNTIME=$(just _container-runtime)
+    echo "Opening shell in $RUNTIME container..."
+    $RUNTIME run --rm -it monero-rental-hash-war:latest bash
+
+# Run container with volume mount for live development
+container-dev:
+    #!/usr/bin/env bash
+    RUNTIME=$(just _container-runtime)
+    echo "Running development container with $RUNTIME..."
+    $RUNTIME run --rm -it \
+        -v "$(pwd)/src:/app/src:ro" \
+        -v "$(pwd)/scripts:/app/scripts:ro" \
+        -v "$(pwd)/examples:/app/examples" \
+        monero-rental-hash-war:latest bash
+
+# Clean container images
+container-clean:
+    #!/usr/bin/env bash
+    RUNTIME=$(just _container-runtime)
+    echo "Cleaning $RUNTIME images..."
+    $RUNTIME rmi monero-rental-hash-war:latest || true
+
+# Check container runtime and version
+container-info:
+    #!/usr/bin/env bash
+    RUNTIME=$(just _container-runtime)
+    echo "Container runtime: $RUNTIME"
+    $RUNTIME --version
