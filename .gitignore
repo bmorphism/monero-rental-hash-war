@@ -1,0 +1,52 @@
+# Haskell
+*.hi
+*.o
+*.prof
+*.hp
+*.aux
+*.eventlog
+.stack-work/
+dist/
+dist-newstyle/
+cabal-dev
+*.cabal
+
+# Compiled binaries
+bin/*
+!bin/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+.venv
+*.egg-info/
+
+# Data files (keep examples)
+*.json
+!examples/*.json
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Profiling
+*.prof
+*.hp
+*.stats

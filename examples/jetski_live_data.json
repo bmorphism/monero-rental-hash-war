@@ -1,0 +1,31 @@
+{
+  "network_hashrate": 4.97,
+  "qubic_hashrate": 0.7454999999999999,
+  "orphaned_blocks": 0,
+  "block_withholding_score": 0.08189999999999999,
+  "pool_distribution": [
+    [
+      "Qubic",
+      0.15
+    ],
+    [
+      "MineXMR",
+      0.2
+    ],
+    [
+      "SupportXMR",
+      0.18
+    ],
+    [
+      "Hashvault",
+      0.12
+    ],
+    [
+      "Others",
+      0.35
+    ]
+  ],
+  "last_reorg_depth": 0,
+  "timestamp": 1759695103.805662,
+  "xmr_price": 320.69
+}
